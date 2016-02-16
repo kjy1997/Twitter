@@ -1,45 +1,45 @@
-//
-//  PostsViewController.swift
-//  Twitter
-//
-//  Created by Jiayi Kou on 2/14/16.
-//  Copyright © 2016 Jiayi Kou. All rights reserved.
-//
 
 import UIKit
 
-class PostsViewController: UIViewController,UITableViewDelegate,UITableViewDataSource{
+class TweetsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    var tweets: [Tweet]?
     @IBOutlet weak var tableView: UITableView!
- var tweets: [Tweet]!
-    override func viewDidLoad() {
+        override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let image = UIImageView(image: UIImage(named: "Twitter_logo"))
+        self.navigationItem.titleView = image
+        
         tableView.delegate = self
         tableView.dataSource = self
-        super.viewDidLoad()
-        for dictionary in array {
-            self.tweets.append(Tweet(dictionary: dictionary))
-        }
         
-
-        // Do any additional setup after loading the view.
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 100
+        
+        // Do any additional setup after loading the view
+        
+        TwitterClient.sharedInstance.homeTimeLineWithParams(nil, completion: { (tweets, error) -> () in
+            self.tweets = tweets
+            self.tableView.reloadData()
+        })
+        
     }
     
-    func tweetsWithArray(array: [NSDictionary]) -> [Tweet]{
-        for dictionary in array {
-            self.tweets.append(Tweet(dictionary: dictionary))
-        }
-        
-        return tweets
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func onLogout(sender: AnyObject) {
+        User.currentUser?.logout()
+    }
+    
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCellWithIdentifier("TweetCell", forIndexPath: indexPath) as! TweetCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("TweetCell", forIndexPath: indexPath) as! TweetCell
         
-       // if let tweets = tweets {
+        if let tweets = tweets {
             let tweet = tweets[indexPath.row]
             let user = tweet.user
             cell.usernameLabel.text = user?.name
@@ -67,32 +67,28 @@ class PostsViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             
             
             cell.tweet = tweet
-       // }
+        }
         
         cell.backgroundColor = UIColor(red: 238/255.0, green: 238/255.0, blue: 238/255.0, alpha: 1)
         return cell
-
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //if let tweets = tweets {
-            return 20
-//        } else {
-//            return 0
-//        }
+        if let tweets = tweets {
+            return tweets.count
+        } else {
+            return 0
+        }
+    }
     
-    
-    
-
     /*
     // MARK: - Navigation
-
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // Get the new view controller using segue.destinationViewController.
+    // Pass the selected object to the new view controller.
     }
     */
     
-    }
 }

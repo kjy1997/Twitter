@@ -1,10 +1,4 @@
-//
-//  User.swift
-//  Twitter
-//
-//  Created by Jiayi Kou on 2/14/16.
-//  Copyright © 2016 Jiayi Kou. All rights reserved.
-//
+
 
 import UIKit
 
